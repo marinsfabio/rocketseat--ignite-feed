@@ -7,7 +7,7 @@ import { Avatar } from './Avatar'
 
 export function Post({ author, publishedAt, content }) {
 
-  const [comments, setComments] = useState([''])
+  const [comments, setComments] = useState(['bacana'])
   const [newCommentText, setNewCommentText] = useState('')
 
   const publishedDateFormatted = format(publishedAt, "d 'de' LLLL 'às' HH:mm'h'", {
@@ -19,21 +19,27 @@ export function Post({ author, publishedAt, content }) {
     addSuffix: true,
   })
 
-
   function handleCreateNewComment() {
-    Event.preventDefault()
+    vent.preventDefault()
 
     setComments([...comments, newCommentText])
     setNewCommentText('')
   }
 
   function handleNewCommentChange() {
+    Event.target.setCustomValidity('')
     setNewCommentText(Event.target.value)
   }
 
+  function handleNewCommentInvalid() {
+    Event.target.setCustomValidity()
+  }
+
+  const isNewCommentEmpty = newCommentText.length === 0
+
   function deleteComment(commentToDelete) {
     const commentsWithoutDeletedOne = comments.filter(comment => {
-      return comment !==  commentToDelete
+      return comment !== commentToDelete
     })
 
     setComments(commentsWithoutDeletedOne)
@@ -58,7 +64,7 @@ export function Post({ author, publishedAt, content }) {
       </header>
 
       <div className={styles.content}>
-        {content.map(line => {
+        {comments.map(line => {
           if (line.type === 'paragraph') {
             return <p key={line.content}>{line.content}</p>;
           } else if (line.type === 'link') {
@@ -75,9 +81,15 @@ export function Post({ author, publishedAt, content }) {
           placeholder='Deixe um comentário'
           value={newCommentText}
           onChange={handleNewCommentChange}
+          onInvalid={handleNewCommentInvalid}
+          required
         />
 
-        <button type='submit'>Publicar</button>
+        <button 
+          disabled={isNewCommentEmpty}
+          type='submit'>
+            Publicar
+          </button>
       </form>
 
       <div className={styles.commentList}>
